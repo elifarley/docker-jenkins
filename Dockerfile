@@ -1,5 +1,7 @@
 FROM jenkins
+MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
+# See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
 # Modify the UID of the jenkins user to automatically match the mounted volume.
 # Use it just like the original: https://hub.docker.com/_/jenkins/
 
