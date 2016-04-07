@@ -12,7 +12,10 @@ ADD https://github.com/tianon/gosu/releases/download/1.5/gosu-amd64 /usr/local/b
 
 # Change the group of the jenkins user to root, because that group has no 
 # special rights on most host systems.
-RUN chmod 755 /usr/local/bin/gosu
+RUN chmod 755 /usr/local/bin/gosu && \
+  echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+  apk --update add --no-cache shadow && \
+    rm -rf /var/cache/apk/*
 
 ENTRYPOINT usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && \
         gosu jenkins /bin/tini -- /usr/local/bin/jenkins.sh
