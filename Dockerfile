@@ -7,11 +7,11 @@ MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
 USER root
 
-ENV TIMEZONE Brazil/East
+ENV TZ ${TZ:-Brazil/East}
 
 RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
   apk --update add --no-cache shadow tzdata && \
-  cp -a /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime && apk del tzdata && \
+  cp -a /usr/share/zoneinfo/"$TZ" /etc/localtime && apk del tzdata && \
   rm -rf /var/cache/apk/*
 
 # Grab gosu for easy step-down from root.
