@@ -10,7 +10,7 @@ USER root
 ENV TZ ${TZ:-Brazil/East}
 
 RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-  apk --update add --no-cache shadow tzdata && \
+  apk --update add --no-cache openssh-client git shadow tzdata && \
   echo "TZ set to '$TZ'" && cp -a /usr/share/zoneinfo/"$TZ" /etc/localtime && apk del tzdata && \
   rm -rf /var/cache/apk/*
 
