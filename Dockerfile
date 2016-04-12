@@ -10,7 +10,7 @@ USER root
 ENV TIMEZONE Brazil/East
 
 RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-  apk --update add --no-cache shadow tzdata git && \
+  apk --update add --no-cache shadow tzdata && \
   cp -a /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime && apk del tzdata && \
   rm -rf /var/cache/apk/*
 
