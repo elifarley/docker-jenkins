@@ -1,4 +1,4 @@
-FROM quay.io/elifarley/alpine-jenkins:alpine-openjdk8
+FROM jenkins:alpine
 MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
