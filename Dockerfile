@@ -20,4 +20,4 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories 
   rm -rf /var/cache/apk/*
 
 ENTRYPOINT usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && \
-        gosu jenkins /bin/tini -- /usr/local/bin/jenkins.sh
+        /bin/tini -- gosu jenkins /usr/local/bin/jenkins.sh
