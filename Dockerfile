@@ -17,6 +17,7 @@ ENV HOME=/$_USER JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
 ENTRYPOINT ["/bin/tini", "--", "/entry.sh"]
 CMD ["/usr/local/bin/jenkins.sh"]
 
+USER root
 RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
   xinstall install timezone && \
   xinstall save-image-info && \
