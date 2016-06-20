@@ -8,7 +8,7 @@ TZ=${TZ:-Brazil/East} \
 TERM=xterm-256color \
 MNT_DIR=/var/jenkins_home
 
-ENV HOME=/$_USER JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
+ENV HOME="$MNT_DIR" JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
 # Modify the UID of the jenkins user to automatically match the mounted volume.
