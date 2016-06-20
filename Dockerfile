@@ -15,12 +15,9 @@ ENV HOME=/$_USER JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
 # Use it just like the original: https://hub.docker.com/_/jenkins/
 
 ENTRYPOINT ["/bin/tini", "--", "/entry.sh"]
-CMD ["/usr/sbin/sshd", "-D", "-f", "/etc/ssh/sshd_config"]
+CMD ["/usr/local/bin/jenkins.sh"]
 
-ENTRYPOINT usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && \
-        exec /bin/tini -- gosu jenkins /usr/local/bin/jenkins.sh
-
-curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
+RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
   xinstall install timezone && \
   xinstall save-image-info && \
   xinstall install-base && \
