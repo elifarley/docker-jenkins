@@ -19,8 +19,8 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 USER root
 RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
-  xinstall install timezone && \
+  xinstall add timezone && \
   xinstall save-image-info && \
-  xinstall install-base && \
-  xinstall install gosu "$GOSU_VERSION" "$GOSU_SHA" && \
+  xinstall add-base && \
+  xinstall add gosu "$GOSU_VERSION" "$GOSU_SHA" && \
   xinstall cleanup
