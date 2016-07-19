@@ -1,4 +1,4 @@
-FROM jenkins:2.3-alpine
+FROM jenkins:2.7.1-alpine
 MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
 ENV BASE_IMAGE=jenkins:2.3-alpine
