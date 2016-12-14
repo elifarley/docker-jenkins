@@ -38,7 +38,7 @@ EOF
 cat <<-EOF > ~admin/bin/app-bkp.sh
 #!/bin/bash
 
-time ~admin/bin/hgbkp-jenkins.sh ~admin/jenkins-home ssh://hg@bitbucket.org/elifarley/m4u.jenkins main
+time ~admin/bin/hgbkp-jenkins.sh ~admin/jenkins-home ssh://hg@bitbucket.org/user/company.jenkins main
 
 EOF
 
@@ -46,13 +46,13 @@ chmod +x ~admin/bin/*
 
 sudo -u admin docker pull "$IMAGE"
 
-aws s3 cp s3://m4u.jenkins/certs/m4u-artifactory ~admin/certs/
+aws s3 cp s3://company.jenkins/certs/m4u-artifactory ~admin/certs/
 
-aws s3 cp s3://m4u.jenkins/mnt-ssh-config/known_hosts ~admin/.ssh/
+aws s3 cp s3://company.jenkins/mnt-ssh-config/known_hosts ~admin/.ssh/
 
-aws s3 cp s3://m4u.jenkins/mnt-ssh-config/authorized_keys - >> ~admin/.ssh/authorized_keys
+aws s3 cp s3://company.jenkins/mnt-ssh-config/authorized_keys - >> ~admin/.ssh/authorized_keys
 
-aws s3 cp s3://m4u.jenkins.secrets/m4urobot@bitbucket.pem ~admin/.ssh/
+aws s3 cp s3://company.jenkins.secrets/bkprobot@bitbucket.pem ~admin/.ssh/
 
 chmod 0700 ~admin/.ssh
 chmod 0400 ~admin/.ssh/*
