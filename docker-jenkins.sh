@@ -7,6 +7,7 @@ set -x
 docker pull "$IMAGE"
 
 #--log-opt awslogs-region=sa-east-1 \
+# JENKINS_ARGS="--prefix=/jenkins"
 
 exec docker run --name jenkins \
 --log-driver=awslogs \
