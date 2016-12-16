@@ -10,6 +10,7 @@ docker pull "$IMAGE"
 # JENKINS_ARGS="--prefix=/jenkins"
 
 exec docker run --name jenkins \
+-e JENKINS_OPTS="--prefix=/jenkins" \
 --log-driver=awslogs \
 --log-opt awslogs-group=/jenkins/master \
 --log-opt awslogs-stream=$(hostname) \
