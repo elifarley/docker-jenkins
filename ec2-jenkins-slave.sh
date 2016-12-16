@@ -1,62 +1,64 @@
 #!/bin/sh
 
- wget -qO- https://get.docker.com/ | sh
+_USER=admin
 
-gpasswd -a admin docker
+wget -qO- https://get.docker.com/ | sh
+
+gpasswd -a "$_USER" docker
 
 apt-get install mercurial
 
 #---
 
-mkdir -p ~admin/.ssh ~admin/certs ~admin/bin
+_USER=admin
 
-cat <<-EOF > ~admin/.hgrc
+ln -s ~"$_USER" /app
+
+mkdir -p /app/.ssh /app/bin
+
+cat <<-EOF > /app/.hgrc
 [ui]
-username = BKP Robot <bkp@company.com>
-ssh = ssh -i ~/.ssh/bkprobot@bitbucket.pem
+username = Slave Robot <slave@company.com>
+ssh = ssh -i ~/.ssh/slave-robot@bitbucket.pem
 EOF
 
-IMAGE="elifarley/elifarley/docker-jenkins-slaves:alpine-jdk-8"
-
-cat <<-EOF > ~admin/bin/app.sh
-#!/bin/sh
-
-IMAGE="$IMAGE"
-
-exec docker run --name jenkins \
--d --restart=always \
--p 8080:8080 -p 50000:50000 \
--v /home/admin/jenkins-home:/var/jenkins_home \
--v /home/admin/certs:/mnt-ssh-config/certs:ro \
-"\$IMAGE"
-
-EOF
-
-cat <<-EOF > ~admin/bin/app-bkp.sh
+cat <<-EOF > /app/bin/app.sh
 #!/bin/bash
+set -x
+IMAGE="elifarley/docker-jenkins-slaves:alpine-jdk-8"
+docker pull "\$IMAGE"
 
-time ~admin/bin/hgbkp-jenkins.sh ~admin/jenkins-home ssh://hg@bitbucket.org/user/company.jenkins main
+test -f ~/.hgrc && hgrc="-v \$HOME/.hgrc:/app/.hgrc:ro" || unset hgrc
+test -f ~/.gitconfig && gitconfig="-v \$HOME/.gitconfig:/app/.gitconfig:ro" || unset gitconfig
+test -d ~/.m2 && m2dir="-v \$HOME/.m2:/app/.m2" || unset m2dir
+
+docker rm -f jenkins-slave-alpine
+
+exec docker run --name jenkins-slave.alpine-jdk-8 \
+--add-host artifactory.m4ucorp.dmc:"\$(getent hosts artifactory.m4ucorp.dmc | cut -d' ' -f1)" \
+--add-host codeload.github.com:192.30.253.121 \
+-p 2200:2200 \
+-d --restart=always \
+\$hgrc \$gitconfig \$m2dir \
+-v ~/data/known_hosts:/mnt-ssh-config/known_hosts:ro \
+-v ~/data/id_rsa.pub:/mnt-ssh-config/authorized_keys:ro \
+-v ~/data/bitbucket-private-key:/mnt-ssh-config/id_rsa:ro \
+-v ~/data/thundercats-private-key:/mnt-ssh-config/id_rsa-thundercats:ro \
+-v ~/data/gradle.properties:/app/.gradle/gradle.properties:ro \
+-v ~/data/certs:/mnt-ssh-config/certs:ro \
+-v ~/jenkins-slave:/data \
+"\$IMAGE" "\$@"
 
 EOF
 
-chmod +x ~admin/bin/*
+chmod +x /app/bin/*
 
-sudo -u admin docker pull "$IMAGE"
+aws s3 cp s3://company.jenkins/mnt-ssh-config/known_hosts /app/.ssh/
+aws s3 cp s3://company.jenkins.secrets/bkprobot@bitbucket.pem /app/.ssh/
 
-aws s3 cp s3://company.jenkins/certs/m4u-artifactory ~admin/certs/
+chmod 0700 /app/.ssh
+chmod 0400 /app/.ssh/*
+chmod 0644 /app/.ssh/authorized_keys /app/.ssh/known_hosts
+chown -R "$_USER":"$_USER" /app/.ssh
 
-aws s3 cp s3://company.jenkins/mnt-ssh-config/known_hosts ~admin/.ssh/
-
-aws s3 cp s3://company.jenkins/mnt-ssh-config/authorized_keys - >> ~admin/.ssh/authorized_keys
-
-aws s3 cp s3://company.jenkins.secrets/bkprobot@bitbucket.pem ~admin/.ssh/
-
-chmod 0700 ~admin/.ssh
-chmod 0400 ~admin/.ssh/*
-chown -R admin ~admin/.ssh
-
-sudo -u admin ~admin/bin/app-bkp.sh
-
-echo "*/5 * * * *   ~admin/bin/app-bkp.sh" | crontab - -u admin
-
-exec sudo -u admin ~admin/bin/app.sh
+exec sudo -u "$_USER" /app/bin/app.sh
