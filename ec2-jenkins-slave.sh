@@ -12,7 +12,9 @@ apt-get install mercurial
 
 id
 
-mkdir -p ~/.ssh ~/.gradle ~/.docker || exit
+sudo ln -s ~/app /app || exit
+
+mkdir -p ~/app ~/.ssh ~/.gradle ~/.docker || exit
 
 cat <<-EOF >> ~/.hgrc || exit
 [ui]
