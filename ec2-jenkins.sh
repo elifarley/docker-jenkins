@@ -17,7 +17,7 @@ ssh = ssh -i ~/.ssh/bkprobot@bitbucket.pem
 EOF
 
 curl -fsSL -o ~admin/bin/hgbkp-jenkins.sh \
-https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/09801161d74a919bafb1b87891359ef3d6ede6fe/hgbkp-jenkins.sh
+https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/63623be878ffbb6f77c490c93a567b403f57d185/hgbkp-jenkins.sh
 
 cat <<-EOF > ~admin/bin/app-bkp.sh
 #!/bin/bash
