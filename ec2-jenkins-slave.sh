@@ -8,57 +8,27 @@ gpasswd -a "$_USER" docker
 
 apt-get install mercurial
 
-#---
+#--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
 
-_USER=admin
+id
 
-ln -s ~"$_USER" /app
+mkdir -p ~/.ssh || exit
 
-mkdir -p /app/.ssh /app/bin
-
-cat <<-EOF > /app/.hgrc
+cat <<-EOF >> ~/.hgrc || exit
 [ui]
-username = Slave Robot <slave@company.com>
-ssh = ssh -i ~/.ssh/slave-robot@bitbucket.pem
+username = Jenkins Slave <dev_m4urobot@m4u.com.br>
+ssh = ssh -i ~/.ssh/m4urobot@bitbucket.pem
 EOF
 
-cat <<-EOF > /app/bin/app.sh
-#!/bin/bash
-set -x
-IMAGE="elifarley/docker-jenkins-slaves:alpine-jdk-8"
-docker pull "\$IMAGE"
+aws s3 --quiet cp s3://m4u.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~/.ssh/known_hosts && \
+aws s3 cp s3://m4u.jenkins.secrets/m4urobot@bitbucket.pem ~/.ssh/ || exit
 
-test -f ~/.hgrc && hgrc="-v \$HOME/.hgrc:/app/.hgrc:ro" || unset hgrc
-test -f ~/.gitconfig && gitconfig="-v \$HOME/.gitconfig:/app/.gitconfig:ro" || unset gitconfig
-test -d ~/.m2 && m2dir="-v \$HOME/.m2:/app/.m2" || unset m2dir
+chmod 0700 ~/.ssh && \
+chmod 0400 ~/.ssh/* && \
+chmod 0644 ~/.ssh/authorized_keys ~/.ssh/known_hosts || exit
 
-docker rm -f jenkins-slave-alpine
+hg clone 'ssh://hg@bitbucket.org/elifarley/m4u.jenkins-slave.config' ~/jenkins-slave.config || exit
 
-exec docker run --name jenkins-slave.alpine-jdk-8 \
---add-host artifactory.m4ucorp.dmc:"\$(getent hosts artifactory.m4ucorp.dmc | cut -d' ' -f1)" \
---add-host codeload.github.com:192.30.253.121 \
--p 2200:2200 \
--d --restart=always \
-\$hgrc \$gitconfig \$m2dir \
--v ~/data/known_hosts:/mnt-ssh-config/known_hosts:ro \
--v ~/data/id_rsa.pub:/mnt-ssh-config/authorized_keys:ro \
--v ~/data/bitbucket-private-key:/mnt-ssh-config/id_rsa:ro \
--v ~/data/thundercats-private-key:/mnt-ssh-config/id_rsa-thundercats:ro \
--v ~/data/gradle.properties:/app/.gradle/gradle.properties:ro \
--v ~/data/certs:/mnt-ssh-config/certs:ro \
--v ~/jenkins-slave:/data \
-"\$IMAGE" "\$@"
+cp -av gradle.properties ~/.gradle/gradle.properties
 
-EOF
-
-chmod +x /app/bin/*
-
-aws s3 cp s3://company.jenkins/mnt-ssh-config/known_hosts /app/.ssh/
-aws s3 cp s3://company.jenkins.secrets/bkprobot@bitbucket.pem /app/.ssh/
-
-chmod 0700 /app/.ssh
-chmod 0400 /app/.ssh/*
-chmod 0644 /app/.ssh/authorized_keys /app/.ssh/known_hosts
-chown -R "$_USER":"$_USER" /app/.ssh
-
-exec sudo -u "$_USER" /app/bin/app.sh
+sudo JAVA_HOME="${JAVA_HOME:-/usr/lib/jvm/default-jvm}" /usr/local/bin/keytool-import-certs --force ~/jenkins-slave.config/mnt-ssh-config/certs
