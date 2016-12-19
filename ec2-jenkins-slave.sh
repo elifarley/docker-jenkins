@@ -19,7 +19,12 @@ mkdir -p ~/app ~/.ssh ~/.gradle ~/.docker || exit
 cat <<-EOF >> ~/.hgrc || exit
 [ui]
 username = Jenkins Slave <dev_m4urobot@m4u.com.br>
-ssh = ssh -i ~/.ssh/m4urobot@bitbucket.pem
+EOF
+
+cat <<-EOF >> ~/.ssh/config || exit
+Host bitbucket.org
+  IdentityFile ~/.ssh/m4urobot@bitbucket.pem
+  IdentitiesOnly yes
 EOF
 
 aws s3 --quiet cp s3://m4u.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~/.ssh/known_hosts && \
