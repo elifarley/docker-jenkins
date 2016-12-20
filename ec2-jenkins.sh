@@ -51,7 +51,7 @@ chown -R "$_USER":"$_USER" "$_HOME"/.ssh || exit
 
 sudo -u "$_USER" "$_HOME"/bin/app-bkp.sh || exit
 
-echo "*/5 * * * *   ~'$_USER'/bin/app-bkp.sh" | crontab - -u "$_USER" || exit
+echo "*/5 * * * *   '$_HOME'/bin/app-bkp.sh" | crontab - -u "$_USER" || exit
 
 ln -s "$_HOME"/jenkins-home/custom-config/bin/docker-jenkins.sh "$_HOME"/bin/app.sh || exit
 
