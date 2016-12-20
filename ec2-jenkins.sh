@@ -31,14 +31,14 @@ https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/ra
 cat <<-EOF > ~"$_USER"/bin/app-bkp.sh || exit
 #!/bin/bash
 
-time ~"$_USER"/bin/hgbkp-jenkins.sh ~"$_USER"/jenkins-home ssh://hg@bitbucket.org/user/company.jenkins main
+time ~"$_USER"/bin/hgbkp-jenkins.sh ~"$_USER"/jenkins-home ssh://hg@bitbucket.org/elifarley/${_COMPANY}.jenkins main
 
 EOF
 
 chmod +x ~"$_USER"/bin/* || exit
 
-aws s3 --quiet cp s3://company.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~"$_USER"/.ssh/known_hosts && \
-aws s3 cp s3://company.jenkins.secrets/${_COMPANY}robot@bitbucket.pem ~"$_USER"/.ssh/ || exit
+aws s3 --quiet cp s3://${_COMPANY}.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~"$_USER"/.ssh/known_hosts && \
+aws s3 cp s3://${_COMPANY}.jenkins.secrets/${_COMPANY}robot@bitbucket.pem ~"$_USER"/.ssh/ || exit
 
 chmod 0700 ~"$_USER"/.ssh && \
 chmod 0400 ~"$_USER"/.ssh/* && \
