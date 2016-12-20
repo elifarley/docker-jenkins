@@ -10,13 +10,13 @@ docker pull "$IMAGE"
 # JENKINS_ARGS="--prefix=/jenkins"
 
 exec docker run --name jenkins \
--e JENKINS_OPTS="--prefix=/jenkins" \
+-e JENKINS_OPTS="--prefix=/jenkins " \
 --log-driver=awslogs \
 --log-opt awslogs-group=/jenkins/master \
 --log-opt awslogs-stream=$(hostname) \
 --add-host artifactory:"$(getent hosts artifactory.company.com | cut -d' ' -f1)" \
 -d --restart=always \
--p 8080:8080 -p 50000:50000 \
+-p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
 -v "$CMD_BASE"/../..:/var/jenkins_home \
 -v "$CMD_BASE"/../mnt-ssh-config/certs:/mnt-ssh-config/certs:ro \
 "$IMAGE" "$@"
