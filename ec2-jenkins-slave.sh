@@ -10,6 +10,8 @@ apt-get install mercurial
 
 #--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
 
+set -x
+
 id
 
 sudo ln -s ~/app /app || exit
