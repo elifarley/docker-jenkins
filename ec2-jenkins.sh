@@ -18,7 +18,7 @@ cat <<-EOF >> ~"$_USER"/.hgrc || exit
 username = ${_COMPANY} Robot <${_COMPANY}robot@company.com>
 EOF
 
-cat <<-EOF >> ~/.ssh/config || exit
+cat <<-EOF >> ~"$_USER"/.ssh/config || exit
 Host bitbucket.org
   IdentityFile ~/.ssh/${_COMPANY}robot@bitbucket.pem
   IdentitiesOnly yes
