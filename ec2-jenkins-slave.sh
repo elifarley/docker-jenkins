@@ -36,8 +36,11 @@ aws s3 --quiet cp s3://m4u.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat 
 aws s3 cp s3://m4u.jenkins.secrets/m4urobot@bitbucket.pem ~/.ssh/ || exit
 
 chmod 0700 ~/.ssh && \
-chmod 0400 ~/.ssh/* && \
-chmod 0644 ~/.ssh/authorized_keys ~/.ssh/known_hosts ~/.ssh/config || exit
+chmod 0400 ~/.ssh/* &&
+chmod u+w ~/.ssh/known_hosts || exit
+for k in ~/.ssh/*.pub; do
+  test -e "$k" && chmod a+r "$k"
+done
 
 # --
 
@@ -51,6 +54,7 @@ else
 fi
 
 mkdir -p ~/.m2 ~/.gradle ~/.docker && ( cd ~/jenkins-slave.config && \
+chmod go= mvn-settings.xml gradle.properties docker-config.json && \
 cp -av mvn-settings.xml ~/.m2/settings.xml && \
 cp -av gradle.properties ~/.gradle/gradle.properties && \
 cp -av docker-config.json ~/.docker/config.json ) || exit
