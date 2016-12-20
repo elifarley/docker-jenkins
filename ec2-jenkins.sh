@@ -1,10 +1,10 @@
 #!/bin/sh
 
- wget -qO- https://get.docker.com/ | sh
+#wget -qO- https://get.docker.com/ | sh
 
-gpasswd -a admin docker
+#gpasswd -a admin docker
 
-apt-get install mercurial
+#apt-get install mercurial
 
 #---
 
