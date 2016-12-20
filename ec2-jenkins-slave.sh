@@ -6,7 +6,10 @@ wget -qO- https://get.docker.com/ | sh
 
 gpasswd -a "$_USER" docker
 
-apt-get install mercurial
+apt-get install mercurial time bzip2
+
+xinstall add tar
+xinstall cleanup
 
 #--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
 
