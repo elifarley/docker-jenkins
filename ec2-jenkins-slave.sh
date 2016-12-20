@@ -14,7 +14,9 @@ set -x
 
 id
 
-sudo ln -s ~/app /app || exit
+test -L /app -o -e /app || {
+  sudo ln -s ~/app /app || exit
+}
 
 mkdir -p ~/app ~/.ssh || exit
 
@@ -35,7 +37,7 @@ aws s3 cp s3://m4u.jenkins.secrets/m4urobot@bitbucket.pem ~/.ssh/ || exit
 
 chmod 0700 ~/.ssh && \
 chmod 0400 ~/.ssh/* && \
-chmod 0644 ~/.ssh/authorized_keys ~/.ssh/known_hosts || exit
+chmod 0644 ~/.ssh/authorized_keys ~/.ssh/known_hosts ~/.ssh/config || exit
 
 # --
 
