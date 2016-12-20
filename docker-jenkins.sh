@@ -10,14 +10,14 @@ docker pull "$IMAGE"
 # JENKINS_ARGS="--prefix=/jenkins"
 
 exec docker run --name jenkins \
--e JENKINS_OPTS="\
---prefix=/jenkins \
+-e JENKINS_OPTS="--prefix=/jenkins" \
+-e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 -Dcom.sun.management.jmxremote.port=9910 \
 -Dcom.sun.management.jmxremote.rmi.port=9911 \
--Djava.rmi.server.hostname=$(hostname -i)" \
+-Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname -i)" \
 --log-driver=awslogs \
 --log-opt awslogs-group=/jenkins/master \
 --log-opt awslogs-stream=$(hostname) \
