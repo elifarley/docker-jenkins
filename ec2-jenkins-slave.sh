@@ -25,6 +25,7 @@ cat <<-EOF >> ~/.ssh/config || exit
 Host bitbucket.org
   IdentityFile ~/.ssh/m4urobot@bitbucket.pem
   IdentitiesOnly yes
+  User git
 EOF
 
 aws s3 --quiet cp s3://m4u.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~/.ssh/known_hosts && \
