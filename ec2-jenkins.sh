@@ -8,8 +8,8 @@ apt-get install mercurial
 
 #---
 
-_USER="admin"
-_COMPANY='company'
+_USER="${_USER:-admin}"
+_COMPANY="${_COMPANY:-company}"
 
 mkdir -p ~"$_USER"/.ssh ~"$_USER"/bin
 
