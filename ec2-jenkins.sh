@@ -46,7 +46,7 @@ aws s3 cp s3://${_COMPANY}.jenkins.secrets/${_COMPANY}robot@bitbucket.pem "$_HOM
 
 chmod 0700 "$_HOME"/.ssh && \
 chmod 0400 "$_HOME"/.ssh/* && \
-chmod 0644 "$_HOME"/.ssh/known_hosts && \
+chmod 0644 "$_HOME"/.ssh/known_hosts "$_HOME"/.ssh/config && \
 chown -R "$_USER":"$_USER" "$_HOME"/.ssh || exit
 
 sudo -u "$_USER" "$_HOME"/bin/app-bkp.sh || exit
