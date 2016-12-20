@@ -8,44 +8,47 @@ apt-get install mercurial
 
 #---
 
-mkdir -p ~admin/.ssh ~admin/bin
+_USER="admin"
+_COMPANY='company'
 
-cat <<-EOF >> ~admin/.hgrc || exit
+mkdir -p ~"$_USER"/.ssh ~"$_USER"/bin
+
+cat <<-EOF >> ~"$_USER"/.hgrc || exit
 [ui]
-username = BKP Robot <bkp@company.com>
+username = ${_COMPANY} Robot <${_COMPANY}robot@company.com>
 EOF
 
 cat <<-EOF >> ~/.ssh/config || exit
 Host bitbucket.org
-  IdentityFile ~/.ssh/bkprobot@bitbucket.pem
+  IdentityFile ~/.ssh/${_COMPANY}robot@bitbucket.pem
   IdentitiesOnly yes
   User git
 EOF
 
-curl -fsSL -o ~admin/bin/hgbkp-jenkins.sh \
+curl -fsSL -o ~"$_USER"/bin/hgbkp-jenkins.sh \
 https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/63623be878ffbb6f77c490c93a567b403f57d185/hgbkp-jenkins.sh
 
-cat <<-EOF > ~admin/bin/app-bkp.sh || exit
+cat <<-EOF > ~"$_USER"/bin/app-bkp.sh || exit
 #!/bin/bash
 
-time ~admin/bin/hgbkp-jenkins.sh ~admin/jenkins-home ssh://hg@bitbucket.org/user/company.jenkins main
+time ~"$_USER"/bin/hgbkp-jenkins.sh ~"$_USER"/jenkins-home ssh://hg@bitbucket.org/user/company.jenkins main
 
 EOF
 
-chmod +x ~admin/bin/* || exit
+chmod +x ~"$_USER"/bin/* || exit
 
-aws s3 --quiet cp s3://company.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~admin/.ssh/known_hosts && \
-aws s3 cp s3://company.jenkins.secrets/bkprobot@bitbucket.pem ~admin/.ssh/ || exit
+aws s3 --quiet cp s3://company.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~"$_USER"/.ssh/known_hosts && \
+aws s3 cp s3://company.jenkins.secrets/${_COMPANY}robot@bitbucket.pem ~"$_USER"/.ssh/ || exit
 
-chmod 0700 ~admin/.ssh && \
-chmod 0400 ~admin/.ssh/* && \
-chmod 0644 ~admin/.ssh/authorized_keys ~admin/.ssh/known_hosts && \
-chown -R admin:admin ~admin/.ssh || exit
+chmod 0700 ~"$_USER"/.ssh && \
+chmod 0400 ~"$_USER"/.ssh/* && \
+chmod 0644 ~"$_USER"/.ssh/authorized_keys ~"$_USER"/.ssh/known_hosts && \
+chown -R "$_USER":"$_USER" ~"$_USER"/.ssh || exit
 
-sudo -u admin ~admin/bin/app-bkp.sh || exit
+sudo -u "$_USER" ~"$_USER"/bin/app-bkp.sh || exit
 
-echo "*/5 * * * *   ~admin/bin/app-bkp.sh" | crontab - -u admin || exit
+echo "*/5 * * * *   ~'$_USER'/bin/app-bkp.sh" | crontab - -u "$_USER" || exit
 
-ln -s ~admin/jenkins-home/custom-config/bin/docker-jenkins.sh ~admin/bin/app.sh || exit
+ln -s ~"$_USER"/jenkins-home/custom-config/bin/docker-jenkins.sh ~"$_USER"/bin/app.sh || exit
 
-exec sudo -u admin ~admin/bin/app.sh
+exec sudo -u "$_USER" ~"$_USER"/bin/app.sh
