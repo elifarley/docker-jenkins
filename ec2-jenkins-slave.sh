@@ -27,12 +27,32 @@ jenkins_slave_setup() {
 
 }
 
+jenkins_slave_compiler_setup() {
+
+  jenkins_slave_setup || return
+
+  APT_PACKAGES="\
+gcc g++ make patch binutils libc6-dev \
+  libjemalloc-dev libffi-dev libssl-dev libyaml-dev zlib1g-dev libgmp-dev libxml2-dev \
+  libxslt1-dev libreadline-dev libsqlite3-dev \
+  libpq-dev unixodbc unixodbc-dev unixodbc-bin ruby-odbc freetds-bin freetds-common freetds-dev postgresql-client \
+  git lxc\
+"
+  xinstall add-pkg && xinstall cleanup
+
+}
+
 id
 set -x
 export DEBUG=1
 
 test "$1" = '--setup' -o -n "$SETUP" && {
   jenkins_slave_setup
+  exit
+}
+
+test "$1" = '--setup-compiler' -o -n "$SETUP_COMPILER" && {
+  jenkins_slave_compiler_setup
   exit
 }
 
