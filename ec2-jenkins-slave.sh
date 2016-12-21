@@ -35,7 +35,7 @@ test "$1" = '--setup' -o -n "$SETUP" && {
   exit
 }
 
-# export _COMPANY=my-company; curl -fsSL \
+# export COMPANY=my-company SETUP=1; curl -fsSL \
 # https://raw.githubusercontent.com/elifarley/docker-jenkins-uidfv/master/ec2-jenkins-slave.sh \
 # | sh
  
