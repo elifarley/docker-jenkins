@@ -14,7 +14,7 @@ jenkins_slave_setup() {
   curl -fsSL https://test.docker.com/ | sh || return
   gpasswd -a "$_USER" docker
   
-  curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
+  curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
   xinstall save-image-info && \
   xinstall add tar && \
   xinstall add jdk-8-nodesktop && \
@@ -35,7 +35,7 @@ test "$1" = '--setup' -o -n "$SETUP" && {
   exit
 }
 
-# export COMPANY=my-company SETUP=1; curl -fsSL \
+# export COMPANY=my-company SETUP=1; curl -H 'Cache-Control: no-cache' -fsSL \
 # https://raw.githubusercontent.com/elifarley/docker-jenkins-uidfv/master/ec2-jenkins-slave.sh \
 # | sh
  
