@@ -17,7 +17,7 @@ set -x
 
 id
 
-test -L /app -o -e /app || {
+test -d /app -o -L /app || {
   sudo ln -s ~/app /app || exit
 }
 
