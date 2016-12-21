@@ -8,11 +8,9 @@ docker pull "$IMAGE"
 
 if curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null; then
   log_config="--log-driver=awslogs --log-opt awslogs-group=/jenkins/master --log-opt awslogs-stream=$(hostname)"
+  #--log-opt awslogs-region=sa-east-1 \
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
 fi
-
-#--log-opt awslogs-region=sa-east-1 \
-# JENKINS_ARGS="--prefix=/jenkins"
 
 exec docker run --name jenkins \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
