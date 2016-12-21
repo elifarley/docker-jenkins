@@ -44,14 +44,6 @@ chmod +x "$_HOME"/bin/* || exit
 aws s3 --quiet cp s3://${_COMPANY}.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> "$_HOME"/.ssh/known_hosts && \
 aws s3 cp s3://${_COMPANY}.jenkins.secrets/${_COMPANY}robot@bitbucket.pem "$_HOME"/.ssh/ || exit
 
-
-chmod 0700 ~/.ssh && \
-chmod 0400 ~/.ssh/* &&
-chmod u+w ~/.ssh/known_hosts || exit
-for k in ~/.ssh/*.pub; do
-  test -e "$k" && chmod a+r "$k"
-done
-
 chmod 0700 "$_HOME"/.ssh && \
 chmod 0400 "$_HOME"/.ssh/* && \
 chmod u+w ~/.ssh/known_hosts && \
