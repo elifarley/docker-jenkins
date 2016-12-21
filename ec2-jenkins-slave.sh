@@ -21,8 +21,8 @@ jenkins_slave_setup() {
   xinstall add maven3 3.3.9 && \
   xinstall add gradle 3.2.1 '6ef2801f1519c2b5f7daa130209cc5e9f0704dfb' && \
   xinstall add shellbasedeps && \
-  xinstall add shellbasevimextra && \
   sudo -u admin xinstall add shellbase 1.0.9 && \
+  sudo -u admin xinstall add shellbasevimextra && \
   xinstall cleanup
 
 }
