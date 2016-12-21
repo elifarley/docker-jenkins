@@ -30,7 +30,7 @@ jenkins_slave_setup() {
 id
 set -x
 
-test "$1" = '--setup' && {
+test "$1" = '--setup' -o -n "$SETUP" && {
   jenkins_slave_setup
   exit
 }
