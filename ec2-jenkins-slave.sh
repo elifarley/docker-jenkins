@@ -77,7 +77,7 @@ done
 
 # --
 
-HG_URL='ssh://hg@bitbucket.org/elifarley/$COMPANY.jenkins-slave.config'
+HG_URL="ssh://hg@bitbucket.org/elifarley/$COMPANY.jenkins-slave.config"
 
 if test -d ~/jenkins-slave.config/.hg; then
   hg --cwd ~/jenkins-slave.config pull && hg --cwd ~/jenkins-slave.config up -C
