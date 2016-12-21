@@ -29,6 +29,7 @@ jenkins_slave_setup() {
 
 id
 set -x
+export DEBUG=1
 
 test "$1" = '--setup' -o -n "$SETUP" && {
   jenkins_slave_setup
