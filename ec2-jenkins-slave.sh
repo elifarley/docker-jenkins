@@ -1,21 +1,48 @@
 #!/bin/sh
 
-_USER=admin
+jenkins_slave_setup() {
 
-wget -qO- https://get.docker.com/ | sh
+  test $(id -u) = 0 || {
+    echo "--setup must be run as root instead of user '$(id -un)'"; return 1
+  }
 
-gpasswd -a "$_USER" docker
+  _USER=admin
 
-apt-get install mercurial time bzip2
+  apt-get update -y && apt-get install -y ca-certificates curl \
+  bzip2 mercurial time vim || return
+  
+  curl -fsSL https://test.docker.com/ | sh || return
+  gpasswd -a "$_USER" docker
+  
+  curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
+  xinstall save-image-info && \
+  xinstall add tar && \
+  xinstall add jdk-8-nodesktop && \
+  xinstall add maven3 3.3.9 && \
+  xinstall add gradle 3.2.1 '6ef2801f1519c2b5f7daa130209cc5e9f0704dfb' && \
+  xinstall add shellbasedeps && \
+  xinstall add shellbasevimextra && \
+  sudo -u admin xinstall add shellbase 1.0.9 && \
+  xinstall cleanup
 
-xinstall add tar
-xinstall cleanup
-
-#--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
-
-set -x
+}
 
 id
+set -x
+
+test "$1" = '--setup' && {
+  jenkins_slave_setup
+  exit
+}
+
+# export _COMPANY=my-company; curl -fsSL \
+# https://raw.githubusercontent.com/elifarley/docker-jenkins-uidfv/master/ec2-jenkins-slave.sh \
+# | sh
+ 
+#--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
+
+COMPANY="${1:-$COMPANY}"
+JENKINS_SLAVE_EMAIL="${2:-jenkins-slave@$COMPANY.com}"
 
 test -d /app -o -L /app || {
   sudo ln -s ~/app /app || exit
@@ -25,18 +52,18 @@ mkdir -p ~/app ~/.ssh || exit
 
 cat <<-EOF >> ~/.hgrc || exit
 [ui]
-username = Jenkins Slave <dev_m4urobot@m4u.com.br>
+username = Jenkins Slave <$JENKINS_SLAVE_EMAIL>
 EOF
 
 cat <<-EOF >> ~/.ssh/config || exit
 Host bitbucket.org
-  IdentityFile ~/.ssh/m4urobot@bitbucket.pem
+  IdentityFile ~/.ssh/${COMPANY}robot@bitbucket.pem
   IdentitiesOnly yes
   User git
 EOF
 
-aws s3 --quiet cp s3://m4u.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~/.ssh/known_hosts && \
-aws s3 cp s3://m4u.jenkins.secrets/m4urobot@bitbucket.pem ~/.ssh/ || exit
+aws s3 --quiet cp s3://$COMPANY.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> ~/.ssh/known_hosts && \
+aws s3 cp s3://$COMPANY.jenkins.secrets/${COMPANY}robot@bitbucket.pem ~/.ssh/ || exit
 
 chmod 0700 ~/.ssh && \
 chmod 0400 ~/.ssh/* &&
@@ -47,7 +74,7 @@ done
 
 # --
 
-HG_URL='ssh://hg@bitbucket.org/elifarley/m4u.jenkins-slave.config'
+HG_URL='ssh://hg@bitbucket.org/elifarley/$COMPANY.jenkins-slave.config'
 
 if test -d ~/jenkins-slave.config/.hg; then
   hg --cwd ~/jenkins-slave.config pull && hg --cwd ~/jenkins-slave.config up -C
