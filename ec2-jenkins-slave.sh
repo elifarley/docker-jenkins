@@ -37,8 +37,7 @@ gcc g++ make patch binutils libc6-dev \
   libxslt1-dev libreadline-dev libsqlite3-dev \
   libpq-dev unixodbc unixodbc-dev unixodbc-bin ruby-odbc freetds-bin freetds-common freetds-dev postgresql-client \
   git lxc\
-"
-  xinstall add-pkg && xinstall cleanup
+" xinstall add-pkg && xinstall cleanup
 
 }
 
