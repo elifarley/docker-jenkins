@@ -30,7 +30,7 @@ Host bitbucket.org
 EOF
 
 curl -fsSL -o "$_HOME"/bin/hgbkp-jenkins.sh \
-https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/b61a23a5353a0ce504300a0f3285b0f4603028e2/hgbkp-jenkins.sh
+https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/ecbe2ecc31e0f6056b03bdd9887469e779049e61/hgbkp-jenkins.sh
 
 cat <<-EOF > "$_HOME"/bin/app-bkp.sh || exit
 #!/bin/bash
