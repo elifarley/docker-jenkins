@@ -44,6 +44,8 @@ test "$1" = '--setup' -o -n "$SETUP" && {
 COMPANY="${1:-$COMPANY}"
 JENKINS_SLAVE_EMAIL="${2:-jenkins-slave@$COMPANY.com}"
 
+test "$COMPANY" || { echo "COMPANY not set."; return 1 ;}
+
 test -d /app -o -L /app || {
   sudo ln -s ~/app /app || exit
 }
