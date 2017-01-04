@@ -1,7 +1,7 @@
-FROM jenkins:2.7.1-alpine
+FROM jenkins:alpine
 MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
-ENV BASE_IMAGE=jenkins:2.3-alpine
+ENV BASE_IMAGE=jenkins:alpine
 
 ARG APK_PACKAGES="su-exec"
 
