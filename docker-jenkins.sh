@@ -7,7 +7,7 @@ set -x
 docker pull "$IMAGE"
 
 if curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null; then
-  log_config="--log-driver=awslogs --log-opt awslogs-group=/jenkins/master --log-opt awslogs-stream=$(hostname)"
+  log_config="--log-driver=awslogs --log-opt awslogs-group=/jenkins/master --log-opt awslogs-stream='$(hostname)/$(basename "$IMAGE")@$(date -Is)'"
   #--log-opt awslogs-region=sa-east-1 \
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
 fi
