@@ -6,7 +6,7 @@ IMAGE="elifarley/docker-jenkins-uidfv:2-latest"
 set -x
 docker pull "$IMAGE"
 
-if curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null; then
+curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   log_config="
   --log-driver=awslogs
   --log-opt awslogs-group=/jenkins/master
@@ -14,7 +14,7 @@ if curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-i
   "
   #--log-opt awslogs-region=sa-east-1
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
-fi
+}
 
 exec docker run --name jenkins \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
