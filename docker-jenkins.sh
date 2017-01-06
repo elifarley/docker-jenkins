@@ -7,8 +7,12 @@ set -x
 docker pull "$IMAGE"
 
 if curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null; then
-  log_config="--log-driver=awslogs --log-opt awslogs-group=/jenkins/master --log-opt awslogs-stream='$(hostname)/$(basename "$IMAGE")@$(date -Is)'"
-  #--log-opt awslogs-region=sa-east-1 \
+  log_config="
+  --log-driver=awslogs
+  --log-opt awslogs-group=/jenkins/master
+  --log-opt awslogs-stream='$(hostname)/$(basename "$IMAGE")@$(date -Is)'
+  "
+  #--log-opt awslogs-region=sa-east-1
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
 fi
 
@@ -19,12 +23,12 @@ exec docker run --name jenkins \
 -v "$CMD_BASE"/../mnt-ssh-config:/mnt-ssh-config:ro \
 $log_config \
 -e JENKINS_OPTS="--prefix=/jenkins" \
--e JAVA_OPTS="\
--Dcom.sun.management.jmxremote \
--Dcom.sun.management.jmxremote.ssl=false \
--Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.port=9910 \
--Dcom.sun.management.jmxremote.rmi.port=9911 \
+-e JAVA_OPTS="
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.port=9910
+-Dcom.sun.management.jmxremote.rmi.port=9911
 -Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)" \
 -d --restart=always \
 "$IMAGE" "$@"
