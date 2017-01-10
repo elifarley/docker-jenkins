@@ -9,7 +9,7 @@ docker pull "$IMAGE"
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   log_config="
   --log-driver=awslogs
-  --log-opt awslogs-group=/jenkins/master
+  --log-opt awslogs-group=/jenkins/slave
   --log-opt awslogs-stream='$(hostname)/$(basename "$IMAGE")@$(date -Is)'
   "
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
@@ -22,17 +22,15 @@ MOUNT_DOCKER="\
 -v $(which docker):$(which docker):ro
 "
 
-# TODO
-#-v ~/data/id_rsa.pub:/mnt-ssh-config/authorized_keys:ro \
-#-v ~/data/id_rsa:/mnt-ssh-config/id_rsa:ro \
-#-v ~/data/known_hosts:/mnt-ssh-config/known_hosts:ro \
-#-v ~/data/docker-config.json:/mnt-ssh-config/docker-config.json:ro \
-
 exec docker run --name jenkins-slave-devel \
--p 2201:2200 -p 9910:9910 -p 9911:9911 \
+-p 2200:2200 -p 9910:9910 -p 9911:9911 \
 --dns=10.11.64.21 --dns=10.11.64.22 --dns-search=m4ucorp.dmc \
 -v /var/tmp/jenkins-slave:/data \
--v "$CMD_BASE"/../mnt-ssh-config:/mnt-ssh-config:ro \
+-v "$CMD_BASE"/../mnt-ssh-config/:/mnt-ssh-config:ro \
+-v "$CMD_BASE"/../mvn-settings.xml:/app/.m2/settings.xml:ro \
+-v "$CMD_BASE"/../gradle.properties:/app/.gradle/gradle.properties:ro \
+$log_config \
+$MOUNT_DOCKER \
 -e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
 -Dcom.sun.management.jmxremote.ssl=false \
@@ -41,6 +39,4 @@ exec docker run --name jenkins-slave-devel \
 -Dcom.sun.management.jmxremote.rmi.port=9911 \
 -Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)" \
 -d --restart=always \
-$log_config \
-$MOUNT_DOCKER \
 "$IMAGE" "$@"
