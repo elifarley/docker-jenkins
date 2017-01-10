@@ -31,7 +31,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/maste
   xinstall save-image-info && \
   xinstall add entrypoint && \
   xinstall add timezone && \
-  xinstall add-pkg && \
+  DEBUG=1 xinstall add-pkg && \
   xinstall cleanup
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
