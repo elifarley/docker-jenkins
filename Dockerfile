@@ -3,7 +3,7 @@ MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
 ENV BASE_IMAGE=jenkins:alpine
 
-ARG APK_PACKAGES="su-exec"
+ARG APK_PACKAGES="su-exec shadow"
 
 ARG MNT_DIR=/var/jenkins_home
 ARG _USER=jenkins
