@@ -1,6 +1,10 @@
 #!/bin/sh
 CMD_BASE="$(readlink -f "$0")" || CMD_BASE="$0"; CMD_BASE="$(dirname "$CMD_BASE")"
 
+# Bootstrap:
+# hg clone ssh://hg@bitbucket.org/elifarley/company.jenkins-slave.config ~/jenkins-slave.config
+# ~/jenkins-slave.config/bin/docker-jenkins-slave.sh
+
 set -x
 IMAGE="elifarley/docker-jenkins-slaves:openjdk-8-sshd-devel"
 IMAGE="elifarley/docker-dev-env:debian-openjdk-8-sshd-compiler"
@@ -30,6 +34,8 @@ exec docker run --name jenkins-slave-devel \
 -v "$CMD_BASE"/../mnt-ssh-config/:/mnt-ssh-config:ro \
 -v "$CMD_BASE"/../mvn-settings.xml:/app/.m2/settings.xml:ro \
 -v "$CMD_BASE"/../gradle.properties:/app/.gradle/gradle.properties:ro \
+-v "$CMD_BASE"/../aws-credentials:/app/.aws/credentials:ro \
+-v "$CMD_BASE"/../aws-config:/app/.aws/config:ro \
 $log_config $MOUNT_DOCKER \
 -e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
