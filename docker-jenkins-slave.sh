@@ -15,22 +15,22 @@ curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
 }
 
-DOCKER_LIBS="$(ldd $(which docker) | grep libdevmapper | cut -d' ' -f3)"
-MOUNT_DOCKER="\
--v /var/run/docker.sock:/var/run/docker.sock \
--v $DOCKER_LIBS:$DOCKER_LIBS:ro \
--v $(which docker):$(which docker):ro
+MOUNT_DOCKER=''; DOCKER_BIN="$(which docker)"; test "$DOCKER_BIN" && {
+  DOCKER_LIBS="$(ldd $(which docker) | grep libdevmapper | cut -d' ' -f3)"
+  MOUNT_DOCKER="${DOCKER_LIBS:+-v $DOCKER_LIBS:$DOCKER_LIBS:ro}
+-v /var/run/docker.sock:/var/run/docker.sock
+-v $DOCKER_BIN:$DOCKER_BIN:ro
 "
+}
 
 exec docker run --name jenkins-slave-devel \
--p 2200:2200 -p 9910:9910 -p 9911:9911 \
+-p 2200:2200 -p 9920:9910 -p 9921:9911 \
 --dns=10.11.64.21 --dns=10.11.64.22 --dns-search=m4ucorp.dmc \
 -v /var/tmp/jenkins-slave:/data \
 -v "$CMD_BASE"/../mnt-ssh-config/:/mnt-ssh-config:ro \
 -v "$CMD_BASE"/../mvn-settings.xml:/app/.m2/settings.xml:ro \
 -v "$CMD_BASE"/../gradle.properties:/app/.gradle/gradle.properties:ro \
-$log_config \
-$MOUNT_DOCKER \
+$log_config $MOUNT_DOCKER \
 -e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
 -Dcom.sun.management.jmxremote.ssl=false \
