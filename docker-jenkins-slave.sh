@@ -16,7 +16,7 @@ curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4
 }
 
 MOUNT_DOCKER=''; DOCKER_BIN="$(which docker)"; test "$DOCKER_BIN" && {
-  DOCKER_LIBS="$(ldd $(which docker) | grep libdevmapper | cut -d' ' -f3)"
+  DOCKER_LIBS="$(ldd $DOCKER_BIN | grep libdevmapper | cut -d' ' -f3)"
   MOUNT_DOCKER="${DOCKER_LIBS:+-v $DOCKER_LIBS:$DOCKER_LIBS:ro}
 -v /var/run/docker.sock:/var/run/docker.sock
 -v $DOCKER_BIN:$DOCKER_BIN:ro
