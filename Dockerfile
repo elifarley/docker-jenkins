@@ -3,7 +3,7 @@ MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
 ENV BASE_IMAGE=jenkins:alpine
 
-ARG APK_PACKAGES="su-exec"
+ARG APK_PACKAGES="su-exec shadow"
 
 ARG MNT_DIR=/var/jenkins_home
 ARG _USER=jenkins
@@ -31,7 +31,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/maste
   xinstall save-image-info && \
   xinstall add entrypoint && \
   xinstall add timezone && \
-  xinstall add-pkg && \
+  DEBUG=1 xinstall add-pkg && \
   xinstall cleanup
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
