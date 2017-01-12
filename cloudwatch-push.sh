@@ -14,7 +14,7 @@ base_url="${JENKINS_URL}job/$UPSTREAM_JOB_NAME/$UPSTREAM_BUILD_NUMBER"
 log_path='consoleText'; time_format=''
 curl -fsSL "$base_url"/timestamps'?time=HH:mm:ss&endLine=1' | \
 egrep -q '^([[:digit:]]{2}:){2}[[:digit:]]{2}$' && {
-  log_path='timestamps?time=HH:mm:ss&elapsed=HH:mm:ss.S&appendLog'; time_format="--datetime-format '%H:%M:%S'"
+  log_path='timestamps?time=HH:mm:ss&elapsed=HH:mm:ss.S&appendLog'; time_format="--datetime-format %H:%M:%S"
 }
 
 curl -fsSL "$base_url"/"$log_path" | \
