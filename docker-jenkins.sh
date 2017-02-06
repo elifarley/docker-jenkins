@@ -52,7 +52,7 @@ docker run --name "$name" \
 -Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)" \
 -d --restart=always \
 $log_config \
-"$IMAGE" "$@" || return
+"$IMAGE" "$@"
   ) || return
 
   echo "DOWNTIME END: $(date)"
