@@ -7,7 +7,7 @@ docker pull "$IMAGE"
 
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   hostname="$(hostname)"
-  log_stream_name="$(date +'%Y%d%m.%H%M%S');$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
+  log_stream_name="$(date +'%Y%m%d.%H%M%S');$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
   log_config="
   --log-driver=awslogs
   --log-opt awslogs-group=/jenkins/master
@@ -26,14 +26,14 @@ dstatus() { docker inspect "$1" | grep Status | cut -d'"' -f4 ;}
 drun() {
   local name="$1"; test $# -gt 0 && shift
   local status="$(dstatus "$name" 2>/dev/null)"; echo "Container status for '$name': $status"
+  test "$status" = running && echo "STOPPING at $(date)"
 
   case "$status" in running|restarting|created)
     echo "OLD IMAGE: $(dimg "$name")"
-    echo "DOWNTIME START: $(date)"
-    docker stop >/dev/null "$name" && docker >/dev/null rm "$name" || exit
-  ;; exited) echo "DOWNTIME START: $(date)"; docker >/dev/null rm "$name" || exit
+    docker stop >/dev/null -t 30 "$name" && docker >/dev/null rm "$name" || exit
+  ;; exited) docker >/dev/null rm "$name" || exit
   ;; '') echo "Container '$name' not found."
-  ;; *) echo "Unknown container status: $status"; docker ps | grep "$name"; echo "DOWNTIME START: $(date)"; docker rm -f "$name"
+  ;; *) echo "Unknown container status: $status"; docker ps | grep "$name"; docker rm -f "$name"
   esac
 
   ( set -x
