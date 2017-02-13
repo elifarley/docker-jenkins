@@ -7,7 +7,7 @@ docker pull "$IMAGE"
 
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   hostname="$(hostname)"
-  log_stream_name="$(date +'%Y%m%d.%H%M%S');$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
+  log_stream_name="$(date +'%Y%m%d.%H%M%S')/$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
   log_config="
   --log-driver=awslogs
   --log-opt awslogs-group=/jenkins/master
@@ -37,7 +37,7 @@ drun() {
   esac
 
   ( set -x
-docker run --name "$name" \
+docker run --name "$name" -d --restart=always \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
 --dns=10.11.64.21 --dns=10.11.64.22 --dns-search=m4ucorp.dmc \
 -v "$CMD_BASE"/../..:/var/jenkins_home \
@@ -50,7 +50,6 @@ docker run --name "$name" \
 -Dcom.sun.management.jmxremote.port=9910 \
 -Dcom.sun.management.jmxremote.rmi.port=9911 \
 -Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)" \
--d --restart=always \
 $log_config \
 "$IMAGE" "$@"
   ) || return
