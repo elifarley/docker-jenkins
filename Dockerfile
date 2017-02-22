@@ -8,7 +8,7 @@ TZ=${TZ:-Brazil/East} \
 TERM=xterm-256color \
 MNT_DIR=/var/jenkins_home
 
-ENV HOME=/$_USER JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
+ENV JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
 # Modify the UID of the jenkins user to automatically match the mounted volume.
@@ -19,8 +19,8 @@ CMD ["/usr/local/bin/jenkins.sh"]
 
 USER root
 RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
-  xinstall add timezone && \
   xinstall save-image-info && \
-  xinstall add-base && \
+  xinstall add entrypoint && \
+  xinstall add timezone && \
   xinstall add gosu "$GOSU_VERSION" "$GOSU_SHA" && \
   xinstall cleanup
