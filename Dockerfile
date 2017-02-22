@@ -2,7 +2,7 @@ FROM jenkins:alpine
 MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 ENV BASE_IMAGE=jenkins:alpine \
 \
-GOSU_VERSION='1.5' GOSU_SHA=18cced029ed8f0bf80adaa6272bf1650ab68f7aa \
+GOSU_VERSION='1.10' \
 _USER=jenkins \
 TZ=${TZ:-Brazil/East} \
 TERM=xterm-256color \
@@ -22,5 +22,5 @@ RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/maste
   xinstall save-image-info && \
   xinstall add entrypoint && \
   xinstall add timezone && \
-  xinstall add gosu "$GOSU_VERSION" "$GOSU_SHA" && \
+  xinstall add gosu "$GOSU_VERSION" && \
   xinstall cleanup
