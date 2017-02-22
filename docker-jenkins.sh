@@ -7,7 +7,7 @@ docker pull "$IMAGE"
 
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   hostname="$(hostname)"
-  log_stream_name="$(date +'%Y%m%d.%H%M%S');$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
+  log_stream_name="$(date +'%Y%m%d.%H%M%S')/$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
   log_config="
   --log-driver=awslogs
   --log-opt awslogs-group=/jenkins/master
