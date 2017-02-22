@@ -14,7 +14,7 @@ ENV JAVA_TOOL_OPTIONS="-Duser.timezone=$TZ"
 # Modify the UID of the jenkins user to automatically match the mounted volume.
 # Use it just like the original: https://hub.docker.com/_/jenkins/
 
-ENTRYPOINT ["/bin/tini", "--", "/entry.sh"]
+ENTRYPOINT ["/bin/tini", "--", "entrypoint"]
 CMD ["/usr/local/bin/jenkins.sh"]
 
 USER root
