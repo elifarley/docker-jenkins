@@ -10,10 +10,10 @@ jenkins_slave_setup() {
 
   apt-get update -y && apt-get install -y ca-certificates curl \
   bzip2 mercurial time vim || return
-  
+
   curl -fsSL https://test.docker.com/ | sh || return
   gpasswd -a "$_USER" docker
-  
+
   curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/master/install.sh | sh && \
   xinstall save-image-info && \
   xinstall add tar && \
@@ -58,7 +58,7 @@ test "$1" = '--setup-compiler' -o -n "$SETUP_COMPILER" && {
 # export COMPANY=my-company SETUP=1; curl -H 'Cache-Control: no-cache' -fsSL \
 # https://raw.githubusercontent.com/elifarley/docker-jenkins-uidfv/master/ec2-jenkins-slave.sh \
 # | sh
- 
+
 #--- Jenkins Amazon EC2 Cloud Plugin - Init Script:
 
 COMPANY="${1:-$COMPANY}"
