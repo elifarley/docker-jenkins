@@ -7,21 +7,22 @@ docker pull "$IMAGE"
 
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
   hostname="$(hostname)"
-  log_stream_name="$(date +'%Y%m%d.%H%M%S')/$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
+  log_stream_name="$(date +'%Y%m%d.%H%M%S');$(echo ${hostname%%.*}/${IMAGE##*:} | tr -s ':* ' ';..')"
   log_config="
   --log-driver=awslogs
   --log-opt awslogs-group=/jenkins/master
   --log-opt awslogs-stream=$log_stream_name
+  --log-opt awslogs-region=sa-east-1
   "
   echo "Log stream name: $log_stream_name"
   cp -av ~/.ssh/*.p?? "$CMD_BASE"/../mnt-ssh-config/
 }
 
-#--log-opt awslogs-region=sa-east-1 \
-#
-
 dimg() { docker inspect "$1" |grep Image | grep -v sha256: | cut -d'"' -f4 ;}
 dstatus() { docker inspect "$1" | grep Status | cut -d'"' -f4 ;}
+
+#--log-opt awslogs-region=sa-east-1 \
+#
 
 drun() {
   local name="$1"; test $# -gt 0 && shift
@@ -37,24 +38,26 @@ drun() {
   esac
 
   ( set -x
-docker run --name "$name" -d --restart=always \
+  docker run -d --restart=always --name "$name" \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
 --dns=10.11.64.21 --dns=10.11.64.22 --dns-search=m4ucorp.dmc \
 -v "$CMD_BASE"/../..:/var/jenkins_home \
 -v "$CMD_BASE"/../mnt-ssh-config:/mnt-ssh-config:ro \
 -e JENKINS_OPTS="--prefix=/jenkins" \
--e JAVA_OPTS="\
--Dcom.sun.management.jmxremote \
--Dcom.sun.management.jmxremote.ssl=false \
--Dcom.sun.management.jmxremote.authenticate=false \
--Dcom.sun.management.jmxremote.port=9910 \
--Dcom.sun.management.jmxremote.rmi.port=9911 \
--Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)" \
-$log_config \
-"$IMAGE" "$@"
+-e JAVA_OPTS="
+-Djava.util.logging.config.file=$CMD_BASE/../jenkins-java-util-logging.config
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.port=9910
+-Dcom.sun.management.jmxremote.rmi.port=9911
+-Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)
+" \
+  $log_config \
+  "$IMAGE" "$@"
   ) || return
 
-  echo "DOWNTIME END: $(date)"
+  echo "STARTED at $(date)"
 }
 
 drun jenkins
