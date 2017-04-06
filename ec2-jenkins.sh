@@ -1,65 +1,99 @@
 #!/bin/sh
 
-#wget -qO- https://get.docker.com/ | sh
+# Configuration
+#--------------------------------------------------------------------
 
-#gpasswd -a admin docker
+JNAME=my-jenkins-name
+_COMPANY=company
+_EMAIL='cd-robot@company.com'
+BITBUCKET_ROOT='company'
+BITBUCKET_PEM="${_COMPANY}robot@bitbucket.pem"
 
-#apt-get install mercurial
 
-#---
+#--------------------------------------------------------------------
 
-set -x
+JNAME="$(echo $JNAME | tr '[:upper:]' '[:lower:]')"
+_COMPANY="$(echo $_COMPANY | tr '[:upper:]' '[:lower:]')"
 
-_USER="${_USER:-admin}"
-_COMPANY="${_COMPANY:-company}"
+install_debian() {
+  JUSER="${1:-admin}"
 
-_HOME="$(getent passwd "$_USER" | cut -d: -f 6)"
-test "$_HOME" || exit
-
-mkdir -p "$_HOME"/.ssh "$_HOME"/bin || exit
-
-cat <<-EOF >> "$_HOME"/.hgrc || exit
-[ui]
-username = ${_COMPANY} Robot <${_COMPANY}robot@company.com>
-EOF
-
-cat <<-EOF >> "$_HOME"/.ssh/config || exit
-Host bitbucket.org
-  IdentityFile ~/.ssh/${_COMPANY}robot@bitbucket.pem
-  IdentitiesOnly yes
-  User git
-EOF
-
-curl -fsSL -o "$_HOME"/bin/hgbkp-jenkins.sh \
-https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/3b5010317058ad44d3de6a4abac6dadd03209038/hgbkp-jenkins.sh \
- || exit
-
-cat <<-EOF > "$_HOME"/bin/app-bkp.sh || exit
-#!/bin/bash
-
-time "$_HOME"/bin/hgbkp-jenkins.sh "$_HOME"/jenkins-home ssh://hg@bitbucket.org/elifarley/${_COMPANY}.jenkins main
-
-EOF
-
-chmod +x "$_HOME"/bin/* || exit
-
-aws s3 --quiet cp s3://${_COMPANY}.jenkins/mnt-ssh-config/known_hosts /dev/stdout | cat >> "$_HOME"/.ssh/known_hosts && \
-aws s3 cp s3://${_COMPANY}.jenkins.secrets/${_COMPANY}robot@bitbucket.pem "$_HOME"/.ssh/ || exit
-
-chmod 0700 "$_HOME"/.ssh && \
-chmod 0400 "$_HOME"/.ssh/* && \
-chmod u+w ~/.ssh/known_hosts && \
-chown -R "$_USER":"$_USER" "$_HOME"/.ssh || exit
-for k in ~/.ssh/*.pub; do
-  test -e "$k" && { chmod a+r "$k" || exit ;}
-done
-
-sudo -u "$_USER" "$_HOME"/bin/app-bkp.sh || exit
-
-echo "*/5 * * * *   '$_HOME'/bin/app-bkp.sh" | crontab - -u "$_USER" || exit
-
-test -e "$_HOME"/bin/app.sh && ls -Falk "$_HOME"/bin/app.sh || {
-  ln -s "$_HOME"/jenkins-home/custom-config/bin/docker-jenkins.sh "$_HOME"/bin/app.sh || exit
+  wget -qO- https://get.docker.com/ | sh
+  apt-get install mercurial
 }
 
-exec sudo -u "$_USER" "$_HOME"/bin/app.sh
+install_amazon() {
+  JUSER="${1:-ec2-user}"
+
+  yum update -y && \
+  yum install -y mercurial docker && \
+  service docker start
+}
+
+install_amazon || exit
+
+gpasswd -a "$JUSER" docker || exit
+
+get_home() {
+  local result; result="$(getent passwd "$1")" || return
+  echo $result | cut -d : -f 6
+}
+
+JHPARENT="$(get_home "$JUSER")"
+
+mkdir -p "$JHPARENT"/.ssh "$JHPARENT"/bin || exit
+
+cat <<-EOF >"$JHPARENT"/.hgrc || exit
+[ui]
+username = Jenkins Backup Robot <$_EMAIL>
+ssh = ssh -i '$JHPARENT/.ssh/$BITBUCKET_PEM'
+EOF
+
+cat <<-EOF >>"$JHPARENT"/.ssh/config || exit
+Host bitbucket.org
+  IdentityFile '$JHPARENT/.ssh/$BITBUCKET_PEM'
+  IdentitiesOnly yes
+  User git
+
+EOF
+
+curl -fsSL -o "$JHPARENT"/bin/hgbkp-jenkins.sh \
+https://gist.githubusercontent.com/elifarley/2d1842d9579063e2f3b3fce0516e62ec/raw/09801161d74a919bafb1b87891359ef3d6ede6fe/hgbkp-jenkins.sh \
+|| exit
+
+cat <<-EOF >"$JHPARENT"/bin/app-bkp.sh || exit
+#!/bin/env bash
+JNAME='$JNAME'
+URL="ssh://hg@bitbucket.org/$BITBUCKET_ROOT/${_COMPANY}.jenkins.\$JNAME"
+JHPARENT='$JHPARENT'
+
+time "\$JHPARENT"/bin/hgbkp-jenkins.sh "\$JHPARENT"/jenkins-home "\$URL" main
+
+EOF
+
+chmod +x "$JHPARENT"/bin/* || exit
+
+cat <<-EOF >>"$JHPARENT"/.ssh/known_hosts || exit
+bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
+EOF
+
+test -e "$JHPARENT/.ssh/$BITBUCKET_PEM" || {
+  aws s3 cp s3://$_COMPANY.jenkins.secrets.$JNAME/$BITBUCKET_PEM "$JHPARENT"/.ssh/ || exit
+}
+
+chown -R "$JUSER":"$JUSER" "$JHPARENT"/.ssh && \
+chmod 0700 "$JHPARENT"/.ssh && \
+chmod 0400 "$JHPARENT"/.ssh/* || exit
+chmod 0644 "$JHPARENT"/.ssh/known_hosts "$JHPARENT"/.ssh/authorized_keys
+for k in "$JHPARENT"/.ssh/*.pub; do
+  test -e "$k" && { chmod a+r "$k" || exit ;}
+done
+md5sum "$JHPARENT"/.ssh/*
+
+sudo -u "$JUSER" "$JHPARENT"/bin/app-bkp.sh
+
+echo "*/5 * * * *   '$JHPARENT'/bin/app-bkp.sh" | crontab - -u "$JUSER" || exit
+
+ln -s "$JHPARENT"/jenkins-home/custom-config/bin/docker-jenkins.sh "$JHPARENT"/bin/app.sh || exit
+
+exec sudo -u "$JUSER" "$JHPARENT"/bin/app.sh
