@@ -17,14 +17,12 @@ _COMPANY="$(echo $_COMPANY | tr '[:upper:]' '[:lower:]')"
 
 install_debian() {
   JUSER="${1:-admin}"
-
   wget -qO- https://get.docker.com/ | sh
   apt-get install mercurial
 }
 
 install_amazon() {
   JUSER="${1:-ec2-user}"
-
   yum update -y && \
   yum install -y mercurial docker && \
   service docker start
