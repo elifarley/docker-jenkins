@@ -39,11 +39,10 @@ drun() {
   ( set -x
   docker run -d --restart=always --name "$name" \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
--v "$CMD_BASE"/../..:/var/jenkins_home \
--v "$CMD_BASE"/../mnt-ssh-config:/mnt-ssh-config:ro \
--e JENKINS_OPTS="--prefix=/jenkins" \
+-v "$(readlink -f "$CMD_BASE"/../..)":/var/jenkins_home \
+-v "$(readlink -f "$CMD_BASE"/../mnt-ssh-config)":/mnt-ssh-config:ro \
 -e JAVA_OPTS="
--Djava.util.logging.config.file=$CMD_BASE/../jenkins-java-util-logging.config
+-Djava.util.logging.config.file="$(readlink -f "$CMD_BASE"/../jenkins-java-util-logging.config)"
 -Dcom.sun.management.jmxremote
 -Dcom.sun.management.jmxremote.ssl=false
 -Dcom.sun.management.jmxremote.authenticate=false
