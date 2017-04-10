@@ -48,11 +48,11 @@ drun() {
     docker run -d --restart=always --name "$name" \
 -p 2200:2200 -p 9920:9910 -p 9921:9911 \
 -v /var/tmp/jenkins-slave:/data \
--v "$CMD_BASE"/../mnt-ssh-config/:/mnt-ssh-config:ro \
--v "$CMD_BASE"/../mvn-settings.xml:/app/.m2/settings.xml:ro \
--v "$CMD_BASE"/../gradle.properties:/app/.gradle/gradle.properties:ro \
--v "$CMD_BASE"/../aws-credentials:/app/.aws/credentials:ro \
--v "$CMD_BASE"/../aws-config:/app/.aws/config:ro \
+-v "$(readlink -f "$CMD_BASE"/..)"/mnt-ssh-config/:/mnt-ssh-config:ro \
+-v "$(readlink -f "$CMD_BASE"/..)"/mvn-settings.xml:/app/.m2/settings.xml:ro \
+-v "$(readlink -f "$CMD_BASE"/..)"/gradle.properties:/app/.gradle/gradle.properties:ro \
+-v "$(readlink -f "$CMD_BASE"/..)"/aws-credentials:/app/.aws/credentials:ro \
+-v "$(readlink -f "$CMD_BASE"/..)"/aws-config:/app/.aws/config:ro \
 $log_config $MOUNT_DOCKER \
 -e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
