@@ -2,12 +2,10 @@
 CMD_BASE="$(readlink -f "$0")" || CMD_BASE="$0"; CMD_BASE="$(dirname "$CMD_BASE")"
 
 # Bootstrap:
-# hg clone ssh://hg@bitbucket.org/elifarley/company.jenkins-slave.config ~/jenkins-slave.config
+# hg clone ssh://hg@bitbucket.org/company/company.jenkins-slave.config ~/jenkins-slave.config
 # ~/jenkins-slave.config/bin/docker-jenkins-slave.sh
 
-IMAGE="elifarley/docker-jenkins-slaves:openjdk-8-sshd-devel"
-IMAGE="elifarley/docker-dev-env:debian-openjdk-8-sshd-compiler"
-
+IMAGE="elifarley/docker-jenkins-slaves:debian-jdk8-go17-python2-aws"
 docker pull "$IMAGE"
 
 curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 >/dev/null && {
@@ -24,7 +22,7 @@ curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4
 
 MOUNT_DOCKER=''; DOCKER_BIN="$(which docker)"; test "$DOCKER_BIN" && {
   DOCKER_LIBS="$(ldd $DOCKER_BIN | grep libdevmapper | cut -d' ' -f3)"
-  MOUNT_DOCKER="${DOCKER_LIBS:+-v $DOCKER_LIBS:$DOCKER_LIBS:ro}
+  MOUNT_DOCKER="${DOCKER_LIBS:+-v $DOCKER_LIBS:/lib/x86_64-linux-gnu/$(basename "$DOCKER_LIBS"):ro}
 -v /var/run/docker.sock:/var/run/docker.sock
 -v $DOCKER_BIN:$DOCKER_BIN:ro
 "
