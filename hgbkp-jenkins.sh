@@ -48,7 +48,7 @@ rsync -ahv --delete \
     --exclude="jobs/**/modules/*/builds/*/log" \
     --exclude="jobs/**/modules/*/builds/*/archive" \
     --exclude="jobs/**/branches/*/builds/*/log" \
-    --exclude="jobs/**/branches/*/builds/*/archive" \    
+    --exclude="jobs/**/branches/*/builds/*/archive" \
     --exclude="jobs/**/workspace" \
     --exclude="jobs/**/scm-polling.log" \
     --exclude="logs" \
