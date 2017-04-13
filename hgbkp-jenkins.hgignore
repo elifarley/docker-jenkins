@@ -10,10 +10,10 @@ syntax: regexp
 # ^[^/]+/jobs/[^/]+/builds/\d+/log
 # ^[^/]+/jobs/[^/]+/modules/\d+/builds/\d+/log
 
-# Ignore all files but "changelog.xml" and "build.xml" in top-level jobs and jobs nested in folders:
-^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?builds/\d+/(?!build.xml|changelog.xml)
-^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?modules/[^/]+/builds/\d+/(?!build.xml|changelog.xml)
-^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?branches/[^/]+/builds/\d+/(?!build.xml|changelog.xml)
+# Ignore all files but "workflow", "changelog.xml" and "build.xml" in top-level jobs and jobs nested in folders:
+^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?builds/\d+/(?!build.xml|changelog.xml|workflow)
+^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?modules/[^/]+/builds/\d+/(?!build.xml|changelog.xml|workflow)
+^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?branches/[^/]+/builds/\d+/(?!build.xml|changelog.xml|workflow)
 
 # Ignore all files in "builds" dir in top-level jobs and jobs nested in folders:
 # ^[^/]+/jobs/[^/]+/(([^/]+/)*jobs/[^/]+/)?builds/\d+/.*
