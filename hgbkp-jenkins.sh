@@ -59,6 +59,9 @@ rsync -ahv --delete \
     --exclude=".ivy2" \
     --exclude=".m2" \
     --exclude="lost+found" \
+    --exclude="copy_reference_file.log" \
+    --exclude="ThinBackup Worker Thread.log" \
+    --exclude="Connection Activity monitoring to slaves.log" \
     --include="*.xml" \
     --include="*.key" \
     --include="*.key.enc" \
