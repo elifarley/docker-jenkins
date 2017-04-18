@@ -36,9 +36,12 @@ drun() {
 
 # --dns=10.11.64.21 --dns=10.11.64.22 --dns-search=m4ucorp.dmc \
 
+  local hostIP="$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname -I | cut -d' ' -f1)"
+
   ( set -x
   docker run -d --restart=always --name "$name" \
 -p 8080:8080 -p 50000:50000 -p 9910:9910 -p 9911:9911 \
+--add-host=docker-host:$hostIP \
 -v "$(readlink -f "$CMD_BASE"/../..)":/var/jenkins_home \
 -v "$(readlink -f "$CMD_BASE"/../mnt-ssh-config)":/mnt-ssh-config:ro \
 -e JAVA_OPTS="
@@ -48,7 +51,7 @@ drun() {
 -Dcom.sun.management.jmxremote.authenticate=false
 -Dcom.sun.management.jmxremote.port=9910
 -Dcom.sun.management.jmxremote.rmi.port=9911
--Djava.rmi.server.hostname=$(curl -fsL --connect-timeout 1 http://169.254.169.254/latest/meta-data/local-ipv4 || hostname)
+-Djava.rmi.server.hostname=$hostIP
 " \
   $log_config \
   "$IMAGE" "$@"
