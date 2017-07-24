@@ -1,7 +1,7 @@
-FROM jenkins:alpine
+FROM jenkins/jenkins:lts-alpine
 MAINTAINER Elifarley Cruz <elifarley@gmail.com>
 
-ENV BASE_IMAGE=jenkins:alpine
+ENV BASE_IMAGE=jenkins/jenkins:lts-alpine
 
 ARG APK_PACKAGES="su-exec shadow"
 
