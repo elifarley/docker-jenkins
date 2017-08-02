@@ -28,6 +28,9 @@ MOUNT_DOCKER=''; DOCKER_BIN="$(which docker)"; test "$DOCKER_BIN" && {
 "
 }
 
+# See https://github.com/codepath/android_guides/wiki/Installing-Android-SDK-Tools
+MOUNT_ANDROID="${ANDROID_HOME:+-v "$ANDROID_HOME":/app/android-home -e ANDROID_HOME=/app/android-home}"
+
 dimg() { docker inspect "$1" |grep Image | grep -v sha256: | cut -d'"' -f4 ;}
 dstatus() { docker inspect "$1" | grep Status | cut -d'"' -f4 ;}
 
@@ -53,7 +56,7 @@ drun() {
 -v "$(readlink -f "$CMD_BASE"/..)"/gradle.properties:/app/.gradle/gradle.properties:ro \
 -v "$(readlink -f "$CMD_BASE"/..)"/aws-credentials:/app/.aws/credentials:ro \
 -v "$(readlink -f "$CMD_BASE"/..)"/aws-config:/app/.aws/config:ro \
-$log_config $MOUNT_DOCKER \
+$log_config $MOUNT_ANDROID $MOUNT_DOCKER \
 -e JAVA_OPTS="\
 -Dcom.sun.management.jmxremote \
 -Dcom.sun.management.jmxremote.ssl=false \
