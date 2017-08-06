@@ -19,7 +19,7 @@ HG_URL=$1; shift
 HG_REPOS_NAME="$(basename "$HG_URL")"
 LOCAL_STORE="${1:-main}"
 
-test "$LOCAL_STORE" = "$(basename "$LOCAL_STORE")" && LOCAL_STORE=/var/tmp/jenkins-backup/"$LOCAL_STORE"
+test "$LOCAL_STORE" = "$(basename "$LOCAL_STORE")" && LOCAL_STORE=/var/tmp/jenkins-bkp/"$LOCAL_STORE"
 
 test -d "$(dirname "$LOCAL_STORE")/$HG_REPOS_NAME"/.hg || {
   echo "Cloning repository '$HG_URL' to '$(dirname "$LOCAL_STORE")/$HG_REPOS_NAME'..."
