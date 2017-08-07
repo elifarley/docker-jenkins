@@ -43,6 +43,8 @@ rsync -ahv --delete \
     --exclude="workspace" \
     --exclude="war" \
     --exclude="plugins/*.bak" \
+    --exclude="jobs/*/computation" \
+    --exclude="jobs/*/jobs/*/indexing" \
     --exclude="jobs/**/builds/*/archive" \
     --exclude="jobs/**/builds/*/workspace-files/*.tmp" \
     --exclude="jobs/**/modules/*/builds/*/log" \
