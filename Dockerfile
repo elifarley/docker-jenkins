@@ -32,7 +32,10 @@ RUN curl -fsSL https://raw.githubusercontent.com/elifarley/cross-installer/maste
   xinstall add entrypoint && \
   xinstall add timezone && \
   DEBUG=1 xinstall add-pkg && \
-  xinstall cleanup
+  xinstall cleanup && \
+  _f=/usr/local/bin/install-plugins-custom.sh && \
+  printf '#!/bin/sh\nREF="${1:-$JENKINS_HOME/plugins}"; test $# -gt 0 && shift\nREF="$REF" exec install-plugins.sh "$@"\n' > "$_f" && \
+  chmod +x "$_f"
 
 # See https://github.com/bdruemen/jenkins-docker-uid-from-volume/blob/master/Dockerfile
 # Modify the UID of the jenkins user to automatically match the mounted volume.
