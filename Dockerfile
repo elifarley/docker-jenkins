@@ -20,7 +20,7 @@ ENV \
   JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS" \
   TERM="$TERM"
 
-ENTRYPOINT ["/bin/tini", "--", "entrypoint"]
+ENTRYPOINT ["tini", "--", "entrypoint"]
 CMD ["/usr/local/bin/jenkins.sh"]
 
 WORKDIR $HOME
